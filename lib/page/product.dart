@@ -1,3 +1,4 @@
+import 'package:barber_shop/page/order.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,8 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   List<Product> products = [];
-  List product_select = [];
+  List<Product> productSelect = [];
+  double totalPrice = 0;
 
   @override
   void initState() {
@@ -19,16 +21,21 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   void getData() async {
-   await FirebaseFirestore.instance.collection("product").get().then((snapshot) {
-      products = snapshot.docs.map((doc) {
-        var data = doc.data();
-        print("---------------");
-        print(data);
-        return Product(
-            name: data['product_name'],
-            price: data['product_price'],
-            checked: false);
-      }).toList();
+    await FirebaseFirestore.instance
+        .collection("product")
+        .get()
+        .then((snapshot) {
+      setState(() {
+        products = snapshot.docs.map((doc) {
+          var data = doc.data();
+          print("---------------");
+          print(data);
+          return Product(
+              name: data['product_name'],
+              price: data['product_price'],
+              checked: false);
+        }).toList();
+      });
     });
   }
 
@@ -36,7 +43,7 @@ class _ProductPageState extends State<ProductPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("เมนูสินค้า"),
+        title: const Text("เมนูสินค้า"),
       ),
       body: SafeArea(
         child: Padding(
@@ -47,6 +54,25 @@ class _ProductPageState extends State<ProductPage> {
               // addDataSection(),
               // showOnetimeRead(),
               showRealtimeChange(),
+              const Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  const Text("รวมราคา"),
+                  Text("$totalPrice"),
+                ],
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => OrderPage(
+                              products: productSelect, totalPrice: totalPrice),
+                        ));
+                  },
+                  child: const Text("สั่งซื้อสินค้า"))
             ],
           ),
         ),
@@ -57,66 +83,43 @@ class _ProductPageState extends State<ProductPage> {
   Widget showRealtimeChange() {
     return Column(
       children: [
-        const Text("Real Time Change"),
+        const Text("รายการเมนูสินค้า"),
         Column(
-          children: createDataList(),
-        )
-        ,
-        const Divider(),
+          children: createDataList(products),
+        ),
       ],
     );
   }
 
-  // Widget createRealTimeData() {
-
-    // return FutureBuilder(
-    //   future: FirebaseFirestore.instance.collection("product").get(),
-    //   builder: (context, snapshot) {
-    //     print("Realtime Change");
-    //     print(snapshot.connectionState);
-    //     if (snapshot.connectionState == ConnectionState.waiting) {
-    //       return const CircularProgressIndicator();
-    //     } else {
-    //       // print(snapshot.data!.size);
-    //       // print(snapshot.data!.docs);
-    //       // products = snapshot.data!.docs.map((doc) {
-    //       //   var data = doc.data();
-    //       //   print("---------------");
-    //       //   print(data);
-    //       //   return Product(
-    //       //       name: data['product_name'],
-    //       //       price: data['product_price'],
-    //       //       checked: false);
-    //       // }).toList();
-
-    //       print(products);
-
-    //       return Column(
-    //         children: createDataList(products),
-    //       );
-    //     }
-    //   },
-    // );
-  // }
-
-  List<Widget> createDataList() {
+  List<Widget> createDataList(List<Product> products) {
     List<Widget> widgets = [];
     widgets = products.map((prod) {
       // print(data['product_name']);
       return CheckboxListTile(
-        title: Text(prod.name + ", " + prod.price.toString() + " บาท"),
+        title: Text("${prod.name}, ${prod.price} บาท"),
         value: prod.checked,
         onChanged: (bool? value) {
           setState(() {
             prod.checked = value!;
-            print(prod.checked);
-            print(prod.name);
+            // print(prod.checked);
+            // print(prod.name);
             if (prod.checked) {
-              product_select.add(prod.name);
+              productSelect.add(prod);
+              totalPrice += prod.price;
             } else {
-              product_select.remove(prod.name);
+              productSelect.remove(prod);
+              totalPrice -= prod.price;
             }
           });
+
+          // for (var element in productSelect) {
+          //   totalPrice = 0;
+          //   setState(() {
+          //     totalPrice += element.price;
+          //   });
+          // }
+
+          print(productSelect);
         },
 
         // trailing: IconButton(

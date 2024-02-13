@@ -1,5 +1,3 @@
-
-
 import 'package:auth_buttons/auth_buttons.dart';
 import 'package:barber_shop/service/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +15,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _password = TextEditingController();
   final TextEditingController _name = TextEditingController();
   final TextEditingController _tel = TextEditingController();
-
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +43,10 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-   Widget buildTelInput() {
+  Widget buildTelInput() {
     return TextFormField(
       controller: _tel,
+      keyboardType: TextInputType.phone,
       decoration: const InputDecoration(
         labelText: "Tel",
       ),

@@ -12,14 +12,14 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final TextEditingController _email = TextEditingController();
-  final TextEditingController _password = TextEditingController();
+  final TextEditingController _email = TextEditingController(text: "ping@gmail.com");
+  final TextEditingController _password = TextEditingController(text: "123456");
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      // backgroundColor: Colors.transparent,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -78,6 +78,9 @@ class _LoginState extends State<Login> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: EmailAuthButton(
+        style: AuthButtonStyle(
+          buttonColor: Colors.green
+        ),
         onPressed: () {
           AuthService()
               .signInWithEmail(_email.text, _password.text)
@@ -95,7 +98,11 @@ class _LoginState extends State<Login> {
     return TextFormField(
       controller: _email,
       decoration: const InputDecoration(
+        border: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black)
+        ),
         labelText: "E-mail",
+        labelStyle: TextStyle()
       ),
     );
   }

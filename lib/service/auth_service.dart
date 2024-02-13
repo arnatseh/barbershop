@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -42,8 +40,6 @@ class AuthService {
       print(e);
     }
   }
-
-  
 
   // Future<void> addNewInfo(String name, String tel) async {
   //   final currentUser = FirebaseAuth.instance.currentUser;
